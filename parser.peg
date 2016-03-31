@@ -40,28 +40,37 @@ object
       head:member
       tail:(value_separator m:member { return m; })*
       {
+        function getHashCode(key) {
+          if (key !== null && typeof key === 'object') {
+            var to = key.to;
+            var from = key.from || 0;
+            to = to === undefined ? from + key.length - 1 : to;
+            return '$' + from + '..' + to;
+          }
+          return key;
+        }
         var result = {}, i, keyIndex = 0,
           keys = result.$keys = [];
     if (Array.isArray(head.name)) {
           head.name.forEach(function(key) {
               keys.push(key);
-                result[keyIndex++] = head.value;
+                result[getHashCode(key)] = head.value;
             });
         }
         else {
             keys.push(head.name);
-          result[keyIndex++] = head.value;
+          result[getHashCode(head.name)] = head.value;
     }
         for (i = 0; i < tail.length; i++) {
           if (Array.isArray(tail[i].name)) {
               tail[i].name.forEach(function(key) {
                   keys.push(key);
-                  result[keyIndex++] = tail[i].value;
+                  result[getHashCode(key)] = tail[i].value;
               });
           }
           else {
               keys.push(tail[i].name);
-              result[keyIndex++] = tail[i].value;
+              result[getHashCode(tail[i].name)] = tail[i].value;
           }
         }
 
